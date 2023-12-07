@@ -1,16 +1,16 @@
 [package]
-name = "rusty-parrot-discord-bot"
+name = "rusty-parrot"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "lib"
+path = "src/lib.rs"
+
 [dependencies]
 dotenv = "0.15.0"
-lazy_static = "1.4.0"
-rand = "0.8.5"
-serenity = { version = "0.11.6", features = ["client", "gateway", "http", "model", "collector"] }
-slashy = "0.1.2"
-songbird = "0.3.2"
 tokio = { version = "1.33.0", features = ["macros", "rt-multi-thread"] }
-
-[build]
-rustflags = ["-A", "clippy::non_camel_case_types"]
+serenity = { version = "0.12", features = ["client", "standard_framework", "gateway", "http", "model", "collector", "voice"] }
+songbird = { version = "0.4",features = ["builtin-queue"] }
+symphonia = { version = "0.5.2",features = ["aac", "mp3", "isomp4", "alac"] }
+reqwest = "0.11"

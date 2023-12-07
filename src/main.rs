@@ -1,22 +1,32 @@
 use std::env;
 
-use serenity::{async_trait, Client};
-use serenity::client::EventHandler;
+use serenity::all::Ready;
+use serenity::client::{Context, EventHandler};
 use serenity::framework::standard::macros::group;
-use serenity::framework::standard::StandardFramework;
+use serenity::framework::standard::{Configuration, StandardFramework};
+use serenity::{async_trait, Client};
 
 mod commands;
 use commands::*;
 use serenity::model::gateway::GatewayIntents;
+use songbird::SerenityInit;
 
 #[group]
 #[commands(ping)]
 struct General;
 
+#[group]
+#[commands(play, leave)]
+struct Music;
+
 struct Handler;
 
 #[async_trait]
-impl EventHandler for Handler {}
+impl EventHandler for Handler {
+    async fn ready(&self, _: Context, ready: Ready) {
+        println!("{} is connected!", ready.user.name);
+    }
+}
 
 #[tokio::main]
 async fn main() {
@@ -24,18 +34,23 @@ async fn main() {
 
     let framework = StandardFramework::new()
         .group(&GENERAL_GROUP)
-        .configure(|c| c.prefix("~"));
+        .group(&MUSIC_GROUP);
 
-    // Login with a bot token from the environment
+    framework.configure(Configuration::new().prefix("."));
+
     let token = env::var("DISCORD_TOKEN").expect("token");
-    let intents = GatewayIntents::non_privileged() | GatewayIntents::MESSAGE_CONTENT;
+    let intents = GatewayIntents::non_privileged()
+        | GatewayIntents::MESSAGE_CONTENT
+        | GatewayIntents::GUILD_VOICE_STATES;
+    
     let mut client = Client::builder(token, intents)
         .event_handler(Handler)
         .framework(framework)
+        .register_songbird()
+        .type_map_insert::<lib::common::HttpKey>(reqwest::Client::new())
         .await
         .expect("Error creating client");
 
-    // start listening for events by starting a single shard
     if let Err(why) = client.start().await {
         println!("An error occurred while running the client: {:?}", why);
     }

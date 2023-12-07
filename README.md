@@ -10,7 +10,8 @@
 A Discord Bot intended for self hosting, written in Rust by using the libraries [Serenity](https://github.com/serenity-rs/serenity) and [Songbird](https://github.com/serenity-rs/songbird).
 
 ## Features
-<kbd>#TODO</kbd> - Add features here
++ Plays music from different sources
+	+ Plays from **links**
 
 ## Installation
 
@@ -61,9 +62,22 @@ To use the bot in your Discord server, use the invite link you generated in step
 
 + <kbd>#TODO</kbd> - Add commands here
 
-## Contributing
+## Crates
 
-Contributions are welcome! If you have improvements, bug fixes, or features to add, please create a pull request. Make sure your code follows the project's coding standards.
++ dotenv v0.15.0
++ tokio v1.33.0
++ serenity v0.12
++ songbird v0.4
++ symphonia v0.5.2
++ reqwest 0.11
+
+## Dependencies
+
++ yt-dlp
+
+<!-- ## Contributing
+
+Contributions are welcome! If you have improvements, bug fixes, or features to add, please create a pull request. Make sure your code follows the project's coding standards. -->
 
 ## License
 
