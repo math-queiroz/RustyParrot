@@ -1,17 +1,17 @@
 <div align="center">
    <img src="./docs/images/logo.png" alt="Rusty-Parrot_logo.png" style="height: 120px;"/>
-   <h1>Rusty Parrot - Discord Bot</h1>
+   <h1>RustyParrot Discord Bot</h1>
    <img alt="label-badge" src="https://img.shields.io/badge/discord-bot-green?style=flat-square"/>
    <img alt="rust-version" src="https://img.shields.io/badge/rust-1.74.0+-93450a.svg?style=flat-square"/>
 </div>
 
 ## Introduction
 
-A Discord Bot intended for self hosting, written in Rust by using the libraries [Serenity](https://github.com/serenity-rs/serenity) and [Songbird](https://github.com/serenity-rs/songbird).
+A discord bot written in Rust by using the libraries [Serenity](https://github.com/serenity-rs/serenity) and [Songbird](https://github.com/serenity-rs/songbird).
 
 ## Features
-+ Plays music from different sources
-	+ Plays from **links**
++ Plays music using yt-dlp
+	+ Plays from **urls**
 
 ## Installation
 
@@ -58,9 +58,9 @@ A Discord Bot intended for self hosting, written in Rust by using the libraries 
 
 To use the bot in your Discord server, use the invite link you generated in step 5. Once it's in your server, you can interact with it.
 
-**Commands:**
+<!-- **Commands:**
 
-+ <kbd>#TODO</kbd> - Add commands here
++ <kbd>#TODO</kbd> - Add commands here -->
 
 ## Crates
 
