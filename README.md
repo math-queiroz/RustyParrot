@@ -7,7 +7,7 @@
 
 ## Introduction
 
-A discord bot written in Rust by using the libraries [Serenity](https://github.com/serenity-rs/serenity) and [Songbird](https://github.com/serenity-rs/songbird).
+A Rust discord bot made with [Serenity](https://github.com/serenity-rs/serenity) and [Songbird](https://github.com/serenity-rs/songbird).
 
 ## Features
 + Plays music using yt-dlp
@@ -73,7 +73,8 @@ To use the bot in your Discord server, use the invite link you generated in step
 
 ## Dependencies
 
-+ yt-dlp
++ [Audiopus](https://github.com/lakelezz/audiopus)
++ [Yt-dlp](https://github.com/yt-dlp/yt-dlp)
 
 <!-- ## Contributing
 

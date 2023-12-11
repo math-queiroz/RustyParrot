@@ -16,7 +16,7 @@ use songbird::SerenityInit;
 struct General;
 
 #[group]
-#[commands(play, leave)]
+#[commands(play, pause, leave, queue, clear, skip, volume)]
 struct Music;
 
 struct Handler;
@@ -38,18 +38,18 @@ async fn main() {
 
     framework.configure(Configuration::new().prefix("."));
 
-    let token = env::var("DISCORD_TOKEN").expect("token");
+    let token = env::var("DISCORD_TOKEN").expect("No key DISCORD_TOKEN found in .env file");
     let intents = GatewayIntents::non_privileged()
         | GatewayIntents::MESSAGE_CONTENT
         | GatewayIntents::GUILD_VOICE_STATES;
-    
+
     let mut client = Client::builder(token, intents)
         .event_handler(Handler)
         .framework(framework)
         .register_songbird()
         .type_map_insert::<lib::common::HttpKey>(reqwest::Client::new())
         .await
-        .expect("Error creating client");
+        .expect("Error while creating the client");
 
     if let Err(why) = client.start().await {
         println!("An error occurred while running the client: {:?}", why);
