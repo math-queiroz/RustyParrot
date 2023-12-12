@@ -1573,6 +1573,7 @@ name = "rusty-parrot"
 version = "0.1.0"
 dependencies = [
  "dotenv",
+ "futures",
  "reqwest",
  "serenity",
  "songbird",
