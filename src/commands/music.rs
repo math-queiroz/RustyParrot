@@ -9,6 +9,7 @@ use serenity::model::channel::Message;
 use songbird::input::{Input, YoutubeDl};
 use songbird::tracks::{PlayMode, Track};
 use songbird::{Event, EventContext, EventHandler, Songbird, TrackEvent};
+use sqlx::sqlite::SqlitePool;
 
 use std::borrow::BorrowMut;
 use std::collections::VecDeque;
@@ -29,6 +30,27 @@ impl EventHandler for TrackErrorNotifier {
         }
         None
     }
+}
+
+async fn get_sqlite_pool(ctx: &Context) -> SqlitePool {
+    let data = ctx.data.read().await;
+    data.get::<lib::common::SqlitePoolKey>()
+        .cloned()
+        .expect("Typemap entry exists as from client initialisation")
+}
+
+async fn get_sqlite_guild_volume(ctx: &Context, gid: &str) -> Result<i64, sqlx::Error> {
+    let record = sqlx::query!("SELECT volume FROM guild_preferences WHERE guild_id = ?;", gid)
+        .fetch_optional(&get_sqlite_pool(ctx).await)
+        .await?;
+    Ok(record.map(|r| r.volume.unwrap()).unwrap_or(100))
+}
+
+async fn set_sqlite_guild_volume(ctx: &Context, vol: &str, gid: &str) -> Result<(), sqlx::Error> {
+    sqlx::query!("INSERT OR REPLACE INTO guild_preferences (guild_id, volume) VALUES (?,?)", gid, vol)
+        .execute(&get_sqlite_pool(ctx).await)
+        .await?;
+    Ok(())
 }
 
 async fn get_http_client(ctx: &Context) -> Client {
@@ -117,7 +139,7 @@ async fn play(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     match manager.get(guild_id) {
         Some(handler_lock) => {
             let mut handler = handler_lock.lock().await;
-            let (_track, meta) = futures::join!(handler.enqueue(track), input.aux_metadata());
+            let (track, meta) = futures::join!(handler.enqueue(track), input.aux_metadata());
             if let Ok(meta) = meta {
                 let title = meta.title.unwrap_or("song".to_string());
                 let source_url = meta
@@ -130,6 +152,8 @@ async fn play(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
                     None,
                 )
                 .await;
+                let gid = guild_id.to_string();
+                let _ = track.set_volume(get_sqlite_guild_volume(ctx, &gid).await? as f32);
             }
         }
         None => stylized_reply(ctx, msg, "Not in a voice channel to play in", None).await,
@@ -265,9 +289,15 @@ async fn skip(ctx: &Context, msg: &Message, _args: Args) -> CommandResult {
 #[command]
 #[only_in(guilds)]
 async fn volume(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
+    let gid = msg.guild_id.unwrap().to_string();
+    if args.is_empty() {
+        let volume = get_sqlite_guild_volume(ctx, &gid).await?;
+        stylized_reply(ctx, msg, &format!("Current volume is {volume}"), None).await;
+        return Ok(());
+    }
     let target_volume = match args.borrow_mut().single::<isize>() {
         Ok(vol) => {
-            if vol < 0 || vol > 100 {
+            if !(0..=100).contains(&vol) {
                 stylized_reply(ctx, msg, "Must provide a value between 0 and 100", None).await;
                 return Ok(());
             } else {
@@ -283,17 +313,12 @@ async fn volume(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
     let manager = get_songbird_manager(ctx).await;
     if let Some(handler_lock) = manager.get(guild_id) {
         let handler = handler_lock.lock().await;
-        match handler.queue().current() {
-            Some(track) => {
-                let _ = track.set_volume(target_volume as f32 / 100f32);
-            }
-            None => {
-                stylized_reply(ctx, msg, "There is no song playing", None).await;
-                return Ok(());
-            }
+        if let Some(track) = handler.queue().current() {
+            let _ = track.set_volume(target_volume as f32 / 100f32);
         }
-    } else {
-        stylized_reply(ctx, msg, "Not in a voice channel to play in", None).await;
     }
+    let vol = target_volume.to_string();
+    set_sqlite_guild_volume(ctx, &vol, &gid).await?;
+    stylized_reply(ctx, msg, &format!("Defined guild volume to {vol}"), None).await;
     Ok(())
 }

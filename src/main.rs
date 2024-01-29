@@ -32,13 +32,29 @@ impl EventHandler for Handler {
 async fn main() {
     dotenv::dotenv().ok();
 
+    let database = sqlx::sqlite::SqlitePoolOptions::new()
+        .max_connections(3)
+        .connect_with(
+            sqlx::sqlite::SqliteConnectOptions::new()
+                .filename("rusty-parrot.sqlite")
+                .create_if_missing(true),
+        )
+        .await
+        .expect("Couldn't connect to database file");
+
+    sqlx::migrate!("./migrations")
+        .run(&database)
+        .await
+        .expect("Couldn't run database migrations");
+
     let framework = StandardFramework::new()
         .group(&GENERAL_GROUP)
         .group(&MUSIC_GROUP);
 
     framework.configure(Configuration::new().prefix("."));
 
-    let token = env::var("DISCORD_TOKEN").expect("No key DISCORD_TOKEN found in .env file");
+    let token =
+        env::var("DISCORD_TOKEN").expect("No key DISCORD_TOKEN found in env vars or .env file");
     let intents = GatewayIntents::non_privileged()
         | GatewayIntents::MESSAGE_CONTENT
         | GatewayIntents::GUILD_VOICE_STATES;
@@ -47,6 +63,7 @@ async fn main() {
         .event_handler(Handler)
         .framework(framework)
         .register_songbird()
+        .type_map_insert::<lib::common::SqlitePoolKey>(database)
         .type_map_insert::<lib::common::HttpKey>(reqwest::Client::new())
         .await
         .expect("Error while creating the client");

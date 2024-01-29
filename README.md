@@ -23,27 +23,29 @@ A Rust discord bot made with [Serenity](https://github.com/serenity-rs/serenity)
    git clone https://github.com/math-queiroz/rusty-parrot.git
    ```
 
-3. **Dependencies**: Install the required project dependencies by running:
+3. **Environment**: Rename the `.env.template` file to `.env`
+
+4. **Dependencies**: Install the required project dependencies by running:
 
    ```
    cargo build --release
    ```
 
-4. **Bot Token**: If you haven't done so, head on to the [Discord Developer Portal](https://discord.com/developers/applications) to create an application and retrieve a bot token. Then add it to a `.env` file in your project's root directory. Make sure the file follow the correct naming and key pair format, e.g.:
+5. **Bot Token**: If you haven't done so, head on to the [Discord Developer Portal](https://discord.com/developers/applications) to create an application and retrieve a bot token. Then add it to a `.env` file in your project's root directory. Make sure the file follow the correct naming and key pair format, e.g.:
 
    ```
    DISCORD_TOKEN=YOUR_BOT_TOKEN_HERE
    ```
 
-5. **(Optional) Testing Guild**: Set a testing guild id in `.env` file for instantly testing changes in slash command interactions.
+6. **(Optional) Testing Guild**: Set a testing guild id in `.env` file for instantly testing changes in slash command interactions.
 
    ```
    TEST_GUILD_ID=YOUR_TESTING_GUILD_ID_HERE
    ```
 
-6. **Bot Invite Link**: Generate an invite link for your bot by going to the OAuth2 section in the Discord Developer Portal. Make sure to select the `bot` and `applications.commands` scopes and the permissions your bot needs.
+7. **Bot Invite Link**: Generate an invite link for your bot by going to the OAuth2 section in the Discord Developer Portal. Make sure to select the `bot` and `applications.commands` scopes and the permissions your bot needs.
 
-7. **Run the Bot**: Run it with the following command:
+8. **Run the Bot**: Run it with the following command:
 
    ```
    cargo run --release
@@ -75,6 +77,7 @@ To use the bot in your Discord server, use the invite link you generated in step
 
 + [Audiopus](https://github.com/lakelezz/audiopus)
 + [Yt-dlp](https://github.com/yt-dlp/yt-dlp)
++ [Sqlite](https://github.com/sqlite/sqlite)
 
 <!-- ## Contributing
 

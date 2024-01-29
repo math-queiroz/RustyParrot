@@ -15,3 +15,4 @@ songbird = { version = "0.4",features = ["builtin-queue"] }
 symphonia = { version = "0.5.2",features = ["aac", "mp3", "isomp4", "alac"] }
 reqwest = "0.11"
 futures = "0.3.29"
+sqlx = { version = "0.7.3", features = ["sqlite", "runtime-tokio"] }

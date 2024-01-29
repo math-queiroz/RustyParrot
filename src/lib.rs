@@ -33,8 +33,13 @@ pub mod util {
 
 pub mod common {
     pub struct HttpKey;
+    pub struct SqlitePoolKey;
 
     impl songbird::typemap::TypeMapKey for HttpKey {
         type Value = reqwest::Client;
+    }
+
+    impl songbird::typemap::TypeMapKey for SqlitePoolKey {
+        type Value = sqlx::sqlite::SqlitePool;
     }
 }
